@@ -35,6 +35,7 @@ class LapanganController extends Controller
         ]);
 
         $fotoPath = null;
+
         if ($request->hasFile('foto')) {
             $fotoPath = $request->file('foto')->store('lapangan', 'public');
         }
@@ -54,7 +55,6 @@ class LapanganController extends Controller
         return redirect('/lapangan')->with('success', 'Data berhasil ditambahkan');
     }
 
-    // ================= UPDATED SHOW =================
     public function show($id)
     {
         $lapangan = Lapangan::findOrFail($id);
@@ -91,9 +91,13 @@ class LapanganController extends Controller
         $fotoPath = $lapangan->foto;
 
         if ($request->hasFile('foto')) {
+
+            // hapus foto lama
             if ($lapangan->foto) {
                 Storage::disk('public')->delete($lapangan->foto);
             }
+
+            // upload foto baru
             $fotoPath = $request->file('foto')->store('lapangan', 'public');
         }
 
@@ -112,11 +116,50 @@ class LapanganController extends Controller
         return redirect('/lapangan')->with('success', 'Data berhasil diupdate');
     }
 
+    // ================= SOFT DELETE =================
     public function destroy($id)
     {
         $lapangan = Lapangan::findOrFail($id);
+
         $lapangan->delete();
 
-        return redirect('/lapangan')->with('success', 'Data berhasil dihapus');
+        return redirect('/lapangan')
+            ->with('success', 'Lapangan berhasil dinonaktifkan.');
+    }
+
+    // ================= HALAMAN TRASH =================
+    public function trashed()
+    {
+        $lapangan = Lapangan::onlyTrashed()->get();
+
+        return view('lapangan.trashed', compact('lapangan'));
+    }
+
+    // ================= RESTORE DATA =================
+    public function restore($id)
+    {
+        $lapangan = Lapangan::withTrashed()->findOrFail($id);
+
+        $lapangan->restore();
+
+        return redirect('/lapangan/trashed')
+            ->with('success', 'Lapangan berhasil dipulihkan.');
+    }
+
+    // ================= HARD DELETE =================
+    public function forceDelete($id)
+    {
+        $lapangan = Lapangan::withTrashed()->findOrFail($id);
+
+        // hapus foto dari storage
+        if ($lapangan->foto) {
+            Storage::disk('public')->delete($lapangan->foto);
+        }
+
+        // hapus permanen dari database
+        $lapangan->forceDelete();
+
+        return redirect('/lapangan/trashed')
+            ->with('success', 'Lapangan berhasil dihapus permanen.');
     }
 }

@@ -33,48 +33,104 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     // 🔥 Konfirmasi Pembayaran
     Route::get('/konfirmasi', [AdminController::class, 'konfirmasiIndex'])->name('admin.konfirmasi');
-    Route::post('/konfirmasi/{id}/approve', [AdminController::class, 'approve'])->name('admin.approve');
-    Route::post('/konfirmasi/{id}/reject', [AdminController::class, 'reject'])->name('admin.reject');
+
+    Route::post('/konfirmasi/{id}/approve', [AdminController::class, 'approve'])
+        ->name('admin.approve');
+
+    Route::post('/konfirmasi/{id}/reject', [AdminController::class, 'reject'])
+        ->name('admin.reject');
 });
 
 // ================= ADMIN KELOLA =================
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::resource('lapangan', LapanganController::class)->except(['index', 'show']);
-    Route::resource('jadwal', JadwalController::class)->except(['index']);
+
+    // CRUD Lapangan
+    Route::resource('lapangan', LapanganController::class)
+        ->except(['index', 'show']);
+
+    // CRUD Jadwal
+    Route::resource('jadwal', JadwalController::class)
+        ->except(['index']);
+
+    // ================= SOFT DELETE =================
+
+    // halaman trash
+    Route::get('/lapangan/trashed', [LapanganController::class, 'trashed'])
+        ->name('lapangan.trashed');
+
+    // restore data
+    Route::post('/lapangan/{id}/restore', [LapanganController::class, 'restore'])
+        ->name('lapangan.restore');
+
+    // hard delete permanen
+    Route::delete('/lapangan/{id}/force-delete', [LapanganController::class, 'forceDelete'])
+        ->name('lapangan.forceDelete');
 });
 
 // ================= USER =================
 Route::middleware(['auth'])->group(function () {
 
-    // Lapangan & Jadwal (read-only untuk user)
-    Route::resource('lapangan', LapanganController::class)->only(['index', 'show']);
-    Route::resource('jadwal', JadwalController::class)->only(['index']);
+    // ================= LAPANGAN & JADWAL =================
 
-    // 🔥 Booking dari lapangan
-    Route::get('/lapangan/{id}/book', [PemesananController::class, 'bookFromLapangan'])->name('lapangan.book');
+    // read-only untuk user
+    Route::resource('lapangan', LapanganController::class)
+        ->only(['index', 'show']);
 
-    // Pemesanan
+    Route::resource('jadwal', JadwalController::class)
+        ->only(['index']);
+
+    // ================= BOOKING =================
+
+    Route::get('/lapangan/{id}/book', [PemesananController::class, 'bookFromLapangan'])
+        ->name('lapangan.book');
+
+    // ================= PEMESANAN =================
+
     Route::resource('pemesanan', PemesananController::class);
 
-    // Pembayaran
-    Route::get('/pembayaran/create/{pemesanan_id}', [PembayaranController::class, 'create'])->name('pembayaran.create');
-    Route::post('/pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');
-    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+    // ================= PEMBAYARAN =================
 
-    // Notifikasi
-    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
-    Route::get('/notifikasi/read-all', [NotifikasiController::class, 'markAllRead'])->name('notifikasi.readAll');
-    Route::get('/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])->name('notifikasi.read');
+    Route::get('/pembayaran/create/{pemesanan_id}', [PembayaranController::class, 'create'])
+        ->name('pembayaran.create');
 
-    // Review
-    Route::get('/review', [ReviewController::class, 'index'])->name('review.index');
-    Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
+    Route::post('/pembayaran', [PembayaranController::class, 'store'])
+        ->name('pembayaran.store');
 
-    // ================= PROFILE (NEW) =================
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
-    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::get('/pembayaran', [PembayaranController::class, 'index'])
+        ->name('pembayaran.index');
 
-    //================= DELETE =========================
-    Route::delete('/profile/delete', [ProfileController::class, 'deleteAccount'])->name('profile.delete');
+    // ================= NOTIFIKASI =================
+
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])
+        ->name('notifikasi.index');
+
+    Route::get('/notifikasi/read-all', [NotifikasiController::class, 'markAllRead'])
+        ->name('notifikasi.readAll');
+
+    Route::get('/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])
+        ->name('notifikasi.read');
+
+    // ================= REVIEW =================
+
+    Route::get('/review', [ReviewController::class, 'index'])
+        ->name('review.index');
+
+    Route::post('/review', [ReviewController::class, 'store'])
+        ->name('review.store');
+
+    // ================= PROFILE =================
+
+    Route::get('/profile', [ProfileController::class, 'index'])
+        ->name('profile.index');
+
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])
+        ->name('profile.update');
+
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])
+        ->name('profile.password');
+
+    // ================= DELETE ACCOUNT =================
+
+    Route::delete('/profile/delete', [ProfileController::class, 'deleteAccount'])
+        ->name('profile.delete');
 });
