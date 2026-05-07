@@ -117,8 +117,7 @@
             Akun yang dihapus tidak bisa dipulihkan. Semua data pemesanan dan review akan ikut terhapus.
         </p>
 
-        <form action="/profile/delete" method="POST"
-            onsubmit="return confirm('Yakin ingin menghapus akun? Tindakan ini tidak bisa dibatalkan!')">
+        <form action="/profile/delete" method="POST" id="form-hapus-akun">
             @csrf
             @method('DELETE')
 
@@ -136,11 +135,36 @@
                 </div>
             </div>
 
-            <button type="submit"
+            <button type="button"
+                onclick="document.getElementById('modal-hapus-akun').classList.remove('hidden')"
                 class="bg-red-500 text-white px-6 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition">
                 🗑️ Hapus Akun Saya
             </button>
         </form>
+    </div>
+</div>
+
+{{-- MODAL KONFIRMASI HAPUS AKUN --}}
+<div id="modal-hapus-akun" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4">
+        <div class="text-center mb-4">
+            <span class="text-5xl">⚠️</span>
+            <h3 class="text-xl font-bold text-gray-800 mt-3">Hapus Akun?</h3>
+            <p class="text-gray-500 text-sm mt-2">
+                Tindakan ini <strong>tidak bisa dibatalkan</strong>. Semua data pemesanan dan review akan ikut terhapus permanen.
+            </p>
+        </div>
+        <div class="flex gap-3 justify-center mt-6">
+            <button type="button"
+                onclick="document.getElementById('modal-hapus-akun').classList.add('hidden')"
+                class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition">
+                Batal
+            </button>
+            <button type="submit" form="form-hapus-akun"
+                class="bg-red-500 text-white px-6 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition">
+                Ya, Hapus Akun
+            </button>
+        </div>
     </div>
 </div>
 
