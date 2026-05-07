@@ -9,17 +9,41 @@ use Illuminate\Support\Facades\Storage;
 
 class LapanganController extends Controller
 {
-    public function index()
+    // ================= INDEX + SEARCH =================
+    public function index(Request $request)
     {
-        $lapangan = Lapangan::all();
+        $query = Lapangan::query();
+
+        // search nama / tipe lapangan
+        if ($request->filled('search')) {
+
+            $query->where(function ($q) use ($request) {
+
+                $q->where('nama_lapangan', 'like', '%' . $request->search . '%')
+                  ->orWhere('tipe_lapangan', 'like', '%' . $request->search . '%');
+
+            });
+        }
+
+        // filter status
+        if ($request->filled('status')) {
+
+            $query->where('status', $request->status);
+
+        }
+
+        $lapangan = $query->get();
+
         return view('lapangan.index', compact('lapangan'));
     }
 
+    // ================= CREATE =================
     public function create()
     {
         return view('lapangan.create');
     }
 
+    // ================= STORE =================
     public function store(Request $request)
     {
         $request->validate([
@@ -37,7 +61,9 @@ class LapanganController extends Controller
         $fotoPath = null;
 
         if ($request->hasFile('foto')) {
+
             $fotoPath = $request->file('foto')->store('lapangan', 'public');
+
         }
 
         Lapangan::create([
@@ -52,9 +78,11 @@ class LapanganController extends Controller
             'foto'           => $fotoPath,
         ]);
 
-        return redirect('/lapangan')->with('success', 'Data berhasil ditambahkan');
+        return redirect('/lapangan')
+            ->with('success', 'Data berhasil ditambahkan');
     }
 
+    // ================= SHOW =================
     public function show($id)
     {
         $lapangan = Lapangan::findOrFail($id);
@@ -66,12 +94,15 @@ class LapanganController extends Controller
         return view('lapangan.show', compact('lapangan', 'jadwal'));
     }
 
+    // ================= EDIT =================
     public function edit($id)
     {
         $lapangan = Lapangan::findOrFail($id);
+
         return view('lapangan.edit', compact('lapangan'));
     }
 
+    // ================= UPDATE =================
     public function update(Request $request, $id)
     {
         $lapangan = Lapangan::findOrFail($id);
@@ -90,15 +121,18 @@ class LapanganController extends Controller
 
         $fotoPath = $lapangan->foto;
 
+        // upload foto baru
         if ($request->hasFile('foto')) {
 
             // hapus foto lama
             if ($lapangan->foto) {
+
                 Storage::disk('public')->delete($lapangan->foto);
+
             }
 
-            // upload foto baru
-            $fotoPath = $request->file('foto')->store('lapangan', 'public');
+            $fotoPath = $request->file('foto')
+                ->store('lapangan', 'public');
         }
 
         $lapangan->update([
@@ -113,7 +147,8 @@ class LapanganController extends Controller
             'foto'           => $fotoPath,
         ]);
 
-        return redirect('/lapangan')->with('success', 'Data berhasil diupdate');
+        return redirect('/lapangan')
+            ->with('success', 'Data berhasil diupdate');
     }
 
     // ================= SOFT DELETE =================
@@ -135,10 +170,11 @@ class LapanganController extends Controller
         return view('lapangan.trashed', compact('lapangan'));
     }
 
-    // ================= RESTORE DATA =================
+    // ================= RESTORE =================
     public function restore($id)
     {
-        $lapangan = Lapangan::withTrashed()->findOrFail($id);
+        $lapangan = Lapangan::withTrashed()
+            ->findOrFail($id);
 
         $lapangan->restore();
 
@@ -149,11 +185,14 @@ class LapanganController extends Controller
     // ================= HARD DELETE =================
     public function forceDelete($id)
     {
-        $lapangan = Lapangan::withTrashed()->findOrFail($id);
+        $lapangan = Lapangan::withTrashed()
+            ->findOrFail($id);
 
         // hapus foto dari storage
         if ($lapangan->foto) {
+
             Storage::disk('public')->delete($lapangan->foto);
+
         }
 
         // hapus permanen dari database
