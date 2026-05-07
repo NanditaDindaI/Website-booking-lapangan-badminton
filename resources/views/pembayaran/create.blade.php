@@ -27,23 +27,38 @@
                 </div>
                 <div class="flex justify-between border-t pt-2 mt-2">
                     <span class="text-gray-700 font-semibold">Total</span>
-                    <span class="text-green-600 font-bold text-lg">Rp {{ number_format($pemesanan->total_harga, 0, ',', '.') }}</span>
+                    <span class="text-green-600 font-bold text-lg">
+                        Rp {{ number_format($pemesanan->total_harga, 0, ',', '.') }}
+                    </span>
                 </div>
             </div>
         </div>
 
         {{-- Form Pembayaran --}}
-        <form action="/pembayaran" method="POST">
+        <form action="/pembayaran" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="pemesanan_id" value="{{ $pemesanan->id }}">
 
-            <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
-            <select name="metode_bayar"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 mb-6">
-                <option value="transfer">🏦 Transfer Bank</option>
-                <option value="tunai">💵 Tunai</option>
-                <option value="qris">📱 QRIS</option>
-            </select>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
+                <select name="metode_bayar"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
+                    <option value="transfer">🏦 Transfer Bank</option>
+                    <option value="tunai">💵 Tunai</option>
+                    <option value="qris">📱 QRIS</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Bukti Pembayaran <span class="text-red-500">*</span>
+                </label>
+                <input type="file" name="bukti_bayar" accept="image/*"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
+                <p class="text-xs text-gray-400 mt-1">
+                    Upload foto bukti pembayaran (JPG, PNG)
+                </p>
+            </div>
 
             <div class="flex gap-3">
                 <button type="submit"

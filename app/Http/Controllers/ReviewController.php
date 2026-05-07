@@ -12,7 +12,7 @@ class ReviewController extends Controller
     public function index()
     {
         $pemesanan = Pemesanan::with('jadwal.lapangan', 'review')
-            ->where('user_id', Auth::id() ?? 1)
+            ->where('user_id', Auth::id())
             ->where('status_pemesanan', 'dibayar')
             ->get();
 
@@ -29,20 +29,25 @@ class ReviewController extends Controller
 
         $pemesanan = Pemesanan::with('jadwal.lapangan')->findOrFail($request->pemesanan_id);
 
-        // ✅ Cek status harus dibayar
         if ($pemesanan->status_pemesanan !== 'dibayar') {
             return back()->with('error', 'Hanya pemesanan yang sudah dibayar yang bisa direview.');
         }
 
-        // ✅ Anti-duplikat — cek sudah pernah review pemesanan ini belum
         $sudahReview = Review::where('pemesanan_id', $request->pemesanan_id)->exists();
         if ($sudahReview) {
             return back()->with('error', 'Kamu sudah pernah memberikan review untuk pemesanan ini.');
         }
 
+        // Ambil lapangan_id dengan aman
+        $lapanganId = $pemesanan->jadwal?->lapangan?->id ?? null;
+
+        if (!$lapanganId) {
+            return back()->with('error', 'Data lapangan tidak ditemukan.');
+        }
+
         Review::create([
-            'user_id'      => Auth::id() ?? 1,
-            'lapangan_id'  => $pemesanan->jadwal->lapangan->id,
+            'user_id'      => Auth::id(),
+            'lapangan_id'  => $lapanganId,
             'pemesanan_id' => $pemesanan->id,
             'rating'       => $request->rating,
             'komentar'     => $request->komentar,

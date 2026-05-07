@@ -6,7 +6,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold text-gray-800">⭐ Review Lapangan</h1>
-    <a href="/pemesanan" class="text-green-600 text-sm font-medium hover:underline">← Kembali ke Pemesanan</a>
+    <a href="/" class="text-green-600 text-sm font-medium hover:underline">← Kembali ke Beranda</a>
 </div>
 
 <div class="space-y-6">
@@ -16,10 +16,11 @@
         {{-- Detail Pemesanan --}}
         <div class="flex justify-between items-start mb-4">
             <div>
-                <h2 class="text-lg font-bold text-gray-800">{{ $p->jadwal->lapangan->nama_lapangan }}</h2>
-                <p class="text-sm text-gray-500">📅 {{ $p->jadwal->tanggal }}</p>
+                <h2 class="text-lg font-bold text-gray-800">{{ $p->jadwal->lapangan->nama_lapangan ?? '-' }}</h2>
+                <p class="text-sm text-gray-500">📅 {{ $p->jadwal->tanggal ?? '-' }}</p>
                 <p class="text-sm text-green-600 font-semibold">Rp {{ number_format($p->total_harga, 0, ',', '.') }}</p>
             </div>
+
             @if($p->review)
                 <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-semibold">✓ Sudah Direview</span>
             @else

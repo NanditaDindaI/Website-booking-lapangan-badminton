@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lapangan;
+use App\Models\Jadwal;
+use Illuminate\Support\Facades\Storage;
 
 class LapanganController extends Controller
 {
@@ -52,10 +54,16 @@ class LapanganController extends Controller
         return redirect('/lapangan')->with('success', 'Data berhasil ditambahkan');
     }
 
+    // ================= UPDATED SHOW =================
     public function show($id)
     {
         $lapangan = Lapangan::findOrFail($id);
-        return view('lapangan.show', compact('lapangan'));
+
+        $jadwal = Jadwal::where('lapangan_id', $id)
+            ->where('status', 'tersedia')
+            ->get();
+
+        return view('lapangan.show', compact('lapangan', 'jadwal'));
     }
 
     public function edit($id)
@@ -81,10 +89,10 @@ class LapanganController extends Controller
         ]);
 
         $fotoPath = $lapangan->foto;
+
         if ($request->hasFile('foto')) {
-            // Hapus foto lama kalau ada
             if ($lapangan->foto) {
-                \Storage::disk('public')->delete($lapangan->foto);
+                Storage::disk('public')->delete($lapangan->foto);
             }
             $fotoPath = $request->file('foto')->store('lapangan', 'public');
         }

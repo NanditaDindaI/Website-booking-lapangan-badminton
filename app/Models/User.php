@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-// 🔥 TAMBAH INI
+// 🔥 RELASI
 use App\Models\Pemesanan;
 use App\Models\Review;
 use App\Models\Notifikasi;
@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // 🔥 ditambah
     ];
 
     protected $hidden = [
@@ -36,8 +37,18 @@ class User extends Authenticatable
         ];
     }
 
-    // 🔥 RELASI TAMBAHAN
+    // 🔥 ROLE CHECK
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
+    public function isPelanggan(): bool
+    {
+        return $this->role === 'pelanggan';
+    }
+
+    // 🔥 RELASI
     public function pemesanan()
     {
         return $this->hasMany(Pemesanan::class);

@@ -38,13 +38,28 @@
             @foreach($pemesanan as $p)
             <tr class="border-t border-gray-100 hover:bg-gray-50 transition">
                 <td class="px-4 py-3">{{ $p->user->name ?? 'User' }}</td>
-                <td class="px-4 py-3">{{ $p->jadwal->lapangan->nama_lapangan }}</td>
-                <td class="px-4 py-3">{{ $p->jadwal->tanggal }}</td>
-                <td class="px-4 py-3 font-medium">Rp {{ number_format($p->total_harga, 0, ',', '.') }}</td>
+
+                {{-- 🔥 NULL SAFE --}}
+                <td class="px-4 py-3">
+                    {{ $p->jadwal?->lapangan?->nama_lapangan ?? '-' }}
+                </td>
+                <td class="px-4 py-3">
+                    {{ $p->jadwal?->tanggal ?? '-' }}
+                </td>
+
+                <td class="px-4 py-3 font-medium">
+                    Rp {{ number_format($p->total_harga, 0, ',', '.') }}
+                </td>
+
+                {{-- 🔥 STATUS --}}
                 <td class="px-4 py-3">
                     @if($p->status_pemesanan == 'menunggu')
                         <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-semibold">
                             ⏳ Menunggu
+                        </span>
+                    @elseif($p->status_pemesanan == 'menunggu_konfirmasi')
+                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">
+                            🔍 Menunggu Konfirmasi
                         </span>
                     @elseif($p->status_pemesanan == 'dibayar')
                         <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
@@ -56,6 +71,8 @@
                         </span>
                     @endif
                 </td>
+
+                {{-- 🔥 OPSI --}}
                 <td class="px-4 py-3">
                     @if($p->status_pemesanan == 'menunggu')
                         <div class="flex gap-2">
@@ -63,6 +80,7 @@
                                 class="gradient-btn text-white px-3 py-1 rounded-lg text-xs font-medium hover:opacity-90 transition">
                                 Bayar
                             </a>
+
                             <form action="/pemesanan/{{ $p->id }}" method="POST">
                                 @csrf
                                 @method('DELETE')
@@ -73,11 +91,18 @@
                                 </button>
                             </form>
                         </div>
+
+                    @elseif($p->status_pemesanan == 'menunggu_konfirmasi')
+                        <span class="text-blue-500 text-xs font-medium">
+                            Menunggu verifikasi admin
+                        </span>
+
                     @elseif($p->status_pemesanan == 'dibayar')
                         <a href="/review"
                             class="bg-purple-500 text-white px-3 py-1 rounded-lg text-xs font-medium hover:opacity-90 transition">
                             ⭐ Review
                         </a>
+
                     @elseif($p->status_pemesanan == 'expired')
                         <span class="text-gray-400 text-xs">—</span>
                     @endif
@@ -87,11 +112,14 @@
         </tbody>
     </table>
 
+    {{-- EMPTY STATE --}}
     @if($pemesanan->isEmpty())
         <div class="text-center py-12 text-gray-400">
             <p class="text-4xl mb-2">🏸</p>
             <p>Belum ada pemesanan.</p>
-            <a href="/pemesanan/create" class="text-green-600 font-medium hover:underline">Booking sekarang!</a>
+            <a href="/pemesanan/create" class="text-green-600 font-medium hover:underline">
+                Booking sekarang!
+            </a>
         </div>
     @endif
 </div>

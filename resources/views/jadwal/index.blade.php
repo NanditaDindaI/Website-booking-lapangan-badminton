@@ -26,7 +26,7 @@
         <tbody>
             @forelse($jadwal as $j)
             <tr class="border-t border-gray-100 hover:bg-gray-50 transition">
-                <td class="px-4 py-3 font-medium">{{ $j->lapangan->nama_lapangan }}</td>
+                <td class="px-4 py-3 font-medium">{{ $j->lapangan->nama_lapangan ?? '-' }}</td>
                 <td class="px-4 py-3">{{ $j->tanggal }}</td>
                 <td class="px-4 py-3">{{ $j->jam_mulai }} - {{ $j->jam_selesai }}</td>
                 <td class="px-4 py-3">

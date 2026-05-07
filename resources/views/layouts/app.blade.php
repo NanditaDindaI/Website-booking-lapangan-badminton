@@ -24,11 +24,44 @@
         <a href="/" class="text-xl font-bold tracking-wide flex items-center gap-2">
             🏸 <span>Bookminton</span>
         </a>
-        <div class="flex gap-6 text-sm font-medium">
-            <a href="/lapangan" class="hover:text-green-200 transition">Lapangan</a>
-            <a href="/pemesanan" class="hover:text-green-200 transition">Pemesanan</a>
-            <a href="/review" class="hover:text-green-200 transition">⭐ Review</a>
-            <a href="/notifikasi" class="hover:text-green-200 transition">🔔 Notifikasi</a>
+
+        <div class="flex gap-6 text-sm font-medium items-center">
+            @auth
+
+                {{-- Home --}}
+                <a href="{{ Auth::user()->isAdmin() ? '/admin/dashboard' : '/' }}"
+                    class="hover:text-green-200 transition flex items-center gap-1">
+                    🏠 <span>Beranda</span>
+                </a>
+
+                {{-- Menu berdasarkan role --}}
+                @if(Auth::user()->isAdmin())
+                    <a href="/lapangan" class="hover:text-green-200 transition">Lapangan</a>
+                    <a href="/admin/dashboard" class="hover:text-green-200 transition">👑 Dashboard</a>
+                @else
+                    <a href="/lapangan" class="hover:text-green-200 transition">Lapangan</a>
+                    <a href="/pemesanan" class="hover:text-green-200 transition">Pemesanan</a>
+                    <a href="/review" class="hover:text-green-200 transition">⭐ Review</a>
+                    <a href="/notifikasi" class="hover:text-green-200 transition">🔔 Notifikasi</a>
+                    <a href="/profile" class="hover:text-green-200 transition">👤 Profil</a>
+                @endif
+
+                {{-- Logout --}}
+                <form action="/logout" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit"
+                        class="bg-white text-green-700 px-3 py-1 rounded-lg text-xs font-semibold hover:bg-green-50 transition">
+                        Logout
+                    </button>
+                </form>
+
+            @else
+                <a href="/login" class="hover:text-green-200 transition">Login</a>
+                <a href="/register"
+                    class="bg-white text-green-700 px-3 py-1 rounded-lg text-xs font-semibold hover:bg-green-50 transition">
+                    Daftar
+                </a>
+            @endauth
         </div>
     </nav>
 

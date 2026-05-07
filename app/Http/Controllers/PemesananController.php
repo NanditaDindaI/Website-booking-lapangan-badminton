@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pemesanan;
 use App\Models\Jadwal;
+use App\Models\Lapangan;
 use App\Models\Notifikasi;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,11 @@ class PemesananController extends Controller
 {
     public function index()
     {
-        $pemesanan = Pemesanan::with('user', 'jadwal.lapangan')->get();
+        $pemesanan = Pemesanan::with('jadwal.lapangan', 'user')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
         return view('pemesanan.index', compact('pemesanan'));
     }
 
@@ -20,6 +25,19 @@ class PemesananController extends Controller
     {
         $jadwal = Jadwal::where('status', 'tersedia')->with('lapangan')->get();
         return view('pemesanan.create', compact('jadwal'));
+    }
+
+    // 🔥 TAMBAHAN: booking langsung dari lapangan
+    public function bookFromLapangan(Request $request, $lapangan_id)
+    {
+        $lapangan = Lapangan::with('jadwal')->findOrFail($lapangan_id);
+
+        $jadwal = Jadwal::with('lapangan')
+            ->where('lapangan_id', $lapangan_id)
+            ->where('status', 'tersedia')
+            ->get();
+
+        return view('pemesanan.book', compact('lapangan', 'jadwal'));
     }
 
     public function store(Request $request)
@@ -83,7 +101,7 @@ class PemesananController extends Controller
 
         $pemesanan->delete();
 
-        // 🔔 Notifikasi booking_dibatalkan (setelah delete, tanpa pemesanan_id)
+        // 🔔 Notifikasi booking_dibatalkan
         Notifikasi::create([
             'user_id'      => $userId,
             'pemesanan_id' => null,

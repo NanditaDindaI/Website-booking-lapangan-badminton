@@ -26,37 +26,43 @@ class PembayaranController extends Controller
         $request->validate([
             'pemesanan_id' => 'required|exists:pemesanan,id',
             'metode_bayar' => 'required|in:transfer,tunai,qris',
+            'bukti_bayar'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $pemesanan = Pemesanan::with('jadwal.lapangan')->findOrFail($request->pemesanan_id);
 
         if ($pemesanan->status_pemesanan == 'dibayar') {
-            return back()->with('error', 'Pemesanan sudah dibayar');
+            return back()->with('error', 'Pemesanan sudah dibayar.');
         }
 
+        // 🔥 Upload bukti (simplify, karena sudah wajib)
+        $buktiPath = $request->file('bukti_bayar')->store('bukti_bayar', 'public');
+
+        // 🔥 Simpan sebagai pending (bukan langsung lunas)
         Pembayaran::create([
             'pemesanan_id'  => $pemesanan->id,
             'metode_bayar'  => $request->metode_bayar,
             'nominal_bayar' => $pemesanan->total_harga,
-            'status'        => 'lunas',
+            'bukti_bayar'   => $buktiPath,
+            'status'        => 'pending',
             'waktu_bayar'   => now(),
         ]);
 
-        $pemesanan->status_pemesanan = 'dibayar';
+        // 🔥 Update status pemesanan → menunggu konfirmasi admin
+        $pemesanan->status_pemesanan = 'menunggu_konfirmasi';
         $pemesanan->save();
 
-        // 🔔 Notifikasi pembayaran_diterima
+        // 🔔 Notifikasi ke user
         Notifikasi::create([
             'user_id'      => $pemesanan->user_id,
             'pemesanan_id' => $pemesanan->id,
-            'judul'        => 'Pembayaran Diterima!',
-            'pesan'        => 'Pembayaran lapangan ' .
+            'judul'        => 'Bukti Pembayaran Dikirim!',
+            'pesan'        => 'Bukti pembayaran lapangan ' .
                               $pemesanan->jadwal->lapangan->nama_lapangan .
-                              ' pada ' . $pemesanan->jadwal->tanggal .
-                              ' telah diterima. Selamat bermain!',
+                              ' sudah dikirim. Menunggu konfirmasi admin.',
             'tipe'         => 'pembayaran_diterima',
         ]);
 
-        return redirect('/pemesanan')->with('success', 'Pembayaran berhasil!');
+        return redirect('/pemesanan')->with('success', 'Bukti pembayaran berhasil dikirim! Menunggu konfirmasi admin.');
     }
 }
