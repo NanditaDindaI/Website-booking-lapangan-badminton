@@ -34,27 +34,27 @@ MySQL
 Laragon / XAMPP
 
 Langkah instalasi : 
-# 1. Clone repository
+### 1. Clone repository
 git clone https://github.com/NanditaDindaI/Website-booking-lapangan-badminton.git
 cd Website-booking-lapangan-badminton
-# 2. Install dependencies
+### 2. Install dependencies
 composer install
-# 3. Copy file environment
+### 3. Copy file environment
 cp .env.example .env
-# 4. Generate application key
+### 4. Generate application key
 php artisan key:generate
-# 5. Konfigurasi database di .env
+### 5. Konfigurasi database di .env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=bookminton
 DB_USERNAME=root
 DB_PASSWORD=
-# 6. Jalankan migrasi database
+### 6. Jalankan migrasi database
 php artisan migrate
-# 7. Buat storage link untuk upload file
+### 7. Buat storage link untuk upload file
 php artisan storage:link
-# 8. Jalankan aplikasi
+### 8. Jalankan aplikasi
 php artisan serve
 
 ## Akun default 
