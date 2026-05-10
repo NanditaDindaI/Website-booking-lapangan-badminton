@@ -3,21 +3,21 @@ Bookminton adalah aplikasi web berbasis Laravel untuk memudahkan proses booking 
 
 ## Fitur Utama
 **User/pelanggan **
-Registrasi & Login : dengan validasi password (min. 8 karakter, huruf besar, huruf kecil, angka/karakter spesial)
-Lihat & Cari Lapangan : filter berdasarkan nama, tipe, dan status ketersediaan
-Booking Lapangan : langsung dari halaman detail lapangan
-Pembayaran : upload bukti pembayaran (Transfer, Tunai, QRIS)
-Notifikasi : booking berhasil, pembayaran diterima, booking dibatalkan, pengingat bayar
-Review : beri ulasan dan rating setelah booking selesai (anti-duplikat per pemesanan)
-Profil : ubah data diri, ubah password, hapus akun
-Auto Expired : booking otomatis expired jika tidak dibayar sebelum batas waktu
+### 1. Registrasi & Login : dengan validasi password (min. 8 karakter, huruf besar, huruf kecil, angka/karakter spesial)
+### 2. Lihat & Cari Lapangan : filter berdasarkan nama, tipe, dan status ketersediaan
+### 3. Booking Lapangan : langsung dari halaman detail lapangan
+### 4. Pembayaran : upload bukti pembayaran (Transfer, Tunai, QRIS)
+### 5. Notifikasi : booking berhasil, pembayaran diterima, booking dibatalkan, pengingat bayar
+### 6. Review : beri ulasan dan rating setelah booking selesai (anti-duplikat per pemesanan)
+### 7. Profil : ubah data diri, ubah password, hapus akun
+### 8. Auto Expired : booking otomatis expired jika tidak dibayar sebelum batas waktu
 
 ** Admin **
-Dashboard : statistik total pemesanan, lapangan, dan pelanggan
-Kelola Lapangan : tambah, edit, soft delete, restore, dan hard delete permanen
-Kelola Jadwal : tambah dan edit slot jadwal lapangan
-Konfirmasi Pembayaran : approve/reject bukti pembayaran user
-Status Lapangan Otomatis : status lapangan sinkron dengan ketersediaan jadwal
+### 1. Dashboard : statistik total pemesanan, lapangan, dan pelanggan
+### 2. Kelola Lapangan : tambah, edit, soft delete, restore, dan hard delete permanen
+### 3. Kelola Jadwal : tambah dan edit slot jadwal lapangan
+### 4. Konfirmasi Pembayaran : approve/reject bukti pembayaran user
+### 5. Status Lapangan Otomatis : status lapangan sinkron dengan ketersediaan jadwal
 
 ## Teknologi yang digunakan
 PHP Framework : Laravel 12
