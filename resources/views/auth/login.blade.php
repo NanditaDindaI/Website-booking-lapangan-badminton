@@ -19,8 +19,15 @@
 
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" name="password"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
+                <div class="relative">
+                    <input id="login_password" type="password" name="password"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
+                    <button type="button" onclick="toggleLoginPassword()"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                        aria-label="Tampilkan password">
+                        <span id="loginPasswordIcon">👁️</span>
+                    </button>
+                </div>
             </div>
 
             <button type="submit"
@@ -35,5 +42,20 @@
         </p>
     </div>
 </div>
+
+<script>
+    function toggleLoginPassword() {
+        const passwordField = document.getElementById('login_password');
+        const icon = document.getElementById('loginPasswordIcon');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.textContent = '🙈';
+        } else {
+            passwordField.type = 'password';
+            icon.textContent = '👁️';
+        }
+    }
+</script>
 
 @endsection
